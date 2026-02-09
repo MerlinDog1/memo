@@ -708,13 +708,13 @@
                 flashText.style.opacity = '1';
                 flashText.style.transform = 'scale(1)';
                 flashIndex = (flashIndex + 1) % conditions.length;
-            }, 150);
+            }, 80);
         }
         
         // Start rapid flashing
         if (flashText) {
             flashNext();
-            flashInterval = setInterval(flashNext, 800);
+            flashInterval = setInterval(flashNext, 400);
         }
         
         // Stop on hover
