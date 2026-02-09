@@ -224,13 +224,6 @@
             margin: 25px 0;
             font-size: 1.2rem;
             font-weight: bold;
-            animation: pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0% { border-left-width: 6px; }
-            50% { border-left-width: 12px; }
-            100% { border-left-width: 6px; }
         }
 
         .note-card {
@@ -566,6 +559,41 @@
                 </div>
             </section>
 
+            <!-- Rapid Flash Section -->
+            <section id="alternatives" style="background: linear-gradient(180deg, #1a237e 0%, #0d1b60 100%); color: white; padding: 80px 30px; text-align: center;">
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <p style="font-size: 1.2rem; line-height: 1.7; margin-bottom: 50px; opacity: 0.9;">
+                        We have over the last year considered all of the following.<br>
+                        <span style="color: #ff5252; font-weight: 600;">Why can't we consider the thing we know she's had before<br>caused by the thing we all know she is doing?</span>
+                    </p>
+                    
+                    <div style="
+                        background: rgba(255,255,255,0.08);
+                        border-radius: 16px;
+                        padding: 50px 30px;
+                        min-height: 180px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        border: 1px solid rgba(255,255,255,0.15);
+                    ">
+                        <p id="flash-text" style="
+                            font-size: 1.5rem;
+                            font-weight: 500;
+                            opacity: 0;
+                            transform: scale(0.95);
+                            transition: opacity 0.15s ease, transform 0.15s ease;
+                        "></p>
+                    </div>
+                    
+                    <p style="margin-top: 40px; opacity: 0.6; font-size: 0.9rem; letter-spacing: 0.5px;">
+                        One diagnosis after another. Tests. Scans. Specialists.<br>
+                        Yet the simplest explanation remains.
+                    </p>
+                </div>
+            </section>
+
             <div class="emergency-banner">
                 <strong>The Critical Window:</strong> Wernicke's is a medical emergency that can be reversed. Korsakoff is a permanent brain injury. We must act while we are still in the reversible stage.
             </div>
@@ -657,42 +685,8 @@
                 }
             }
         });
-    <!-- Rapid Flash Section -->
-    <section id="alternatives" style="background: linear-gradient(180deg, #1a237e 0%, #0d1b60 100%); color: white; padding: 80px 30px; text-align: center;">
-        <div style="max-width: 600px; margin: 0 auto;">
-            <p style="font-size: 1.2rem; line-height: 1.7; margin-bottom: 50px; opacity: 0.9;">
-                We have over the last year considered all of the following.<br>
-                <span style="color: #ff5252; font-weight: 600;">Why can't we consider the thing we know she's had before<br>caused by the thing we all know she is doing?</span>
-            </p>
-            
-            <div id="flash-container" style="
-                background: rgba(255,255,255,0.08);
-                border-radius: 16px;
-                padding: 50px 30px;
-                min-height: 180px;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                border: 1px solid rgba(255,255,255,0.15);
-            ">
-                <p id="flash-text" style="
-                    font-size: 1.5rem;
-                    font-weight: 500;
-                    opacity: 0;
-                    transform: scale(0.95);
-                    transition: opacity 0.15s ease, transform 0.15s ease;
-                "></p>
-            </div>
-            
-            <p style="margin-top: 40px; opacity: 0.6; font-size: 0.9rem; letter-spacing: 0.5px;">
-                One diagnosis after another. Tests. Scans. Specialists.<br>
-                Yet the simplest explanation remains.
-            </p>
-        </div>
-    </section>
-
-    <script>
+        
+        // Flash functionality
         const conditions = [
             "Parkinson's disease", "Graves' disease", "Skin cancer", "Brain cancer",
             "Cystic fibrosis", "Hemochromatosis", "Ovarian cancer", "Breast cancer",
@@ -701,28 +695,24 @@
             "Myasthenia gravis", "Genetic problems", "Floppy baby syndrome"
         ];
         
-        const textEl = document.getElementById('flash-text');
+        const flashText = document.getElementById('flash-text');
         let flashIndex = 0;
         let flashInterval;
         
         function flashNext() {
-            // Fade out
-            textEl.style.opacity = '0';
-            textEl.style.transform = 'scale(0.95)';
+            flashText.style.opacity = '0';
+            flashText.style.transform = 'scale(0.95)';
             
             setTimeout(() => {
-                // Change text
-                textEl.textContent = conditions[flashIndex];
-                // Fade in with slight zoom
-                textEl.style.opacity = '1';
-                textEl.style.transform = 'scale(1)';
-                
+                flashText.textContent = conditions[flashIndex];
+                flashText.style.opacity = '1';
+                flashText.style.transform = 'scale(1)';
                 flashIndex = (flashIndex + 1) % conditions.length;
             }, 150);
         }
         
         // Start rapid flashing
-        if (textEl) {
+        if (flashText) {
             flashNext();
             flashInterval = setInterval(flashNext, 800);
         }
