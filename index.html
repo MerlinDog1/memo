@@ -686,7 +686,7 @@
             }
         });
         
-        // Flash functionality
+        // Flash functionality - always running
         const conditions = [
             "Parkinson's disease", "Graves' disease", "Skin cancer", "Brain cancer",
             "Cystic fibrosis", "Hemochromatosis", "Ovarian cancer", "Breast cancer",
@@ -700,33 +700,24 @@
         let flashInterval;
         
         function flashNext() {
-            flashText.style.opacity = '0';
-            flashText.style.transform = 'scale(0.95)';
+            // Update text first
+            flashText.textContent = conditions[flashIndex];
+            flashText.style.opacity = '1';
+            flashText.style.transform = 'scale(1)';
             
+            // Fade out after brief display
             setTimeout(() => {
-                flashText.textContent = conditions[flashIndex];
-                flashText.style.opacity = '1';
-                flashText.style.transform = 'scale(1)';
+                flashText.style.opacity = '0';
+                flashText.style.transform = 'scale(0.95)';
                 flashIndex = (flashIndex + 1) % conditions.length;
-            }, 80);
+            }, 350);
         }
         
-        // Start rapid flashing
+        // Start immediately and keep running
         if (flashText) {
             flashNext();
             flashInterval = setInterval(flashNext, 400);
         }
-        
-        // Stop on hover
-        document.getElementById('alternatives').addEventListener('mouseenter', () => {
-            clearInterval(flashInterval);
-        });
-        
-        // Restart on leave
-        document.getElementById('alternatives').addEventListener('mouseleave', () => {
-            flashIndex = 0;
-            flashInterval = setInterval(flashNext, 800);
-        });
     </script>
 </body>
 </html>
