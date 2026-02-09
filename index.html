@@ -39,79 +39,121 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            background: var(--bg-gray);
         }
 
         #gate-box {
             text-align: center;
-            padding: 40px;
+            padding: 35px 30px;
             background: white;
-            border-radius: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            max-width: 320px;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            max-width: 300px;
             width: 100%;
         }
 
         #gate-box h2 {
             color: var(--dark-blue);
-            margin-bottom: 30px;
-            font-size: 1.3rem;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         #display {
-            background: #1a237e;
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             color: white;
-            font-size: 32px;
-            font-family: monospace;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            letter-spacing: 12px;
-            min-height: 72px;
+            font-size: 28px;
+            font-family: 'Courier New', monospace;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            letter-spacing: 10px;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: bold;
         }
 
         .dial-pad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            max-width: 260px;
+            gap: 10px;
+            max-width: 240px;
             margin: 0 auto;
         }
 
         .dial-btn {
-            width: 70px;
-            height: 70px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            border: 2px solid #e0e0e0;
-            background: white;
-            font-size: 24px;
+            border: 1px solid #e8e8e8;
+            background: #fafafa;
+            font-size: 22px;
             font-weight: 600;
             color: var(--dark-blue);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .dial-btn span {
-            font-size: 10px;
-            color: #999;
+            font-size: 8px;
+            color: #aaa;
             margin-top: 2px;
+            letter-spacing: 1px;
         }
 
         .dial-btn:hover {
-            background: #f5f5f5;
+            background: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .dial-btn:active, .dial-btn.pressed {
+            background: var(--dark-blue);
+            color: white;
+            transform: scale(0.94);
             border-color: var(--dark-blue);
         }
 
-        .dial-btn:active {
-            background: var(--dark-blue);
+        .dial-btn:active span, .dial-btn.pressed span {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .dial-btn.delete {
+            background: transparent;
+            border-color: transparent;
+            font-size: 18px;
+            color: #999;
+        }
+
+        .dial-btn.delete:hover {
+            background: #ffebee;
+            color: var(--primary-red);
+            border-color: #ffcdd2;
+        }
+
+        .dial-btn.delete:active {
+            background: var(--primary-red);
             color: white;
-            transform: scale(0.95);
+        }
+
+        #error {
+            color: var(--primary-red);
+            margin-top: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-height: 20px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
         }
 
         .dial-btn.delete {
@@ -283,20 +325,20 @@
     <div id="gate">
         <div id="gate-box">
             <h2>🔒 Enter PIN</h2>
-            <div id="display">------</div>
+            <div id="display">○○○○○○</div>
             <div class="dial-pad">
-                <button class="dial-btn" onclick="addDigit('1')">1</button>
-                <button class="dial-btn" onclick="addDigit('2')">2<span>ABC</span></button>
-                <button class="dial-btn" onclick="addDigit('3')">3<span>DEF</span></button>
-                <button class="dial-btn" onclick="addDigit('4')">4<span>GHI</span></button>
-                <button class="dial-btn" onclick="addDigit('5')">5<span>JKL</span></button>
-                <button class="dial-btn" onclick="addDigit('6')">6<span>MNO</span></button>
-                <button class="dial-btn" onclick="addDigit('7')">7<span>PQRS</span></button>
-                <button class="dial-btn" onclick="addDigit('8')">8<span>TUV</span></button>
-                <button class="dial-btn" onclick="addDigit('9')">9<span>WXYZ</span></button>
-                <button class="dial-btn" onclick="addDigit('0')">0</button>
-                <button class="dial-btn delete" onclick="deleteDigit()">⌫</button>
-                <button class="dial-btn" onclick="addDigit('#')">#</button>
+                <button class="dial-btn" data-digit="1">1</button>
+                <button class="dial-btn" data-digit="2">2<span>ABC</span></button>
+                <button class="dial-btn" data-digit="3">3<span>DEF</span></button>
+                <button class="dial-btn" data-digit="4">4<span>GHI</span></button>
+                <button class="dial-btn" data-digit="5">5<span>JKL</span></button>
+                <button class="dial-btn" data-digit="6">6<span>MNO</span></button>
+                <button class="dial-btn" data-digit="7">7<span>PQRS</span></button>
+                <button class="dial-btn" data-digit="8">8<span>TUV</span></button>
+                <button class="dial-btn" data-digit="9">9<span>WXYZ</span></button>
+                <button class="dial-btn" data-digit="0">0</button>
+                <button class="dial-btn delete" id="btn-delete">⌫</button>
+                <button class="dial-btn" data-digit="#">#</button>
             </div>
             <p id="error"></p>
         </div>
@@ -531,37 +573,45 @@
     </div>
 
     <script>
+        // Set up PIN button listeners
+        document.querySelectorAll('.dial-btn[data-digit]').forEach(btn => {
+            btn.addEventListener('click', () => addDigit(btn.dataset.digit));
+        });
+        document.getElementById('btn-delete').addEventListener('click', deleteDigit);
+        
         const CORRECT_PIN = "710974";
         let currentInput = "";
-        const PIN_LENGTH = 6;
+        let isChecking = false;
         
         function updateDisplay() {
             const display = document.getElementById("display");
             let dots = "";
-            for (let i = 0; i < PIN_LENGTH; i++) {
+            for (let i = 0; i < 6; i++) {
                 if (i < currentInput.length) {
-                    dots += "•";
+                    dots += "●";
                 } else {
-                    dots += "−";
+                    dots += "○";
                 }
             }
             display.textContent = dots;
         }
         
         function addDigit(digit) {
-            if (currentInput.length < PIN_LENGTH) {
+            if (isChecking) return;
+            if (currentInput.length < 6) {
                 currentInput += digit;
                 updateDisplay();
                 document.getElementById("error").textContent = "";
                 
-                // Auto-check when full
-                if (currentInput.length === PIN_LENGTH) {
-                    setTimeout(checkPin, 300);
+                if (currentInput.length === 6) {
+                    isChecking = true;
+                    setTimeout(checkPin, 250);
                 }
             }
         }
         
         function deleteDigit() {
+            if (isChecking) return;
             currentInput = currentInput.slice(0, -1);
             updateDisplay();
             document.getElementById("error").textContent = "";
@@ -572,16 +622,30 @@
                 document.getElementById("gate").style.display = "none";
                 document.getElementById("content").style.display = "block";
             } else {
-                // Shake animation
-                const display = document.getElementById("display");
-                display.style.animation = "none";
-                display.offsetHeight; // Trigger reflow
-                display.style.animation = "shake 0.4s ease";
+                document.getElementById("display").style.animation = "none";
+                document.getElementById("display").offsetHeight;
+                document.getElementById("display").style.animation = "shake 0.5s ease";
                 document.getElementById("error").textContent = "Incorrect PIN";
-                currentInput = "";
-                updateDisplay();
+                setTimeout(() => {
+                    currentInput = "";
+                    updateDisplay();
+                    isChecking = false;
+                }, 500);
             }
         }
+        
+        // Button feedback
+        document.querySelectorAll('.dial-btn').forEach(btn => {
+            btn.addEventListener('mousedown', function() {
+                this.classList.add('pressed');
+            });
+            btn.addEventListener('mouseup', function() {
+                this.classList.remove('pressed');
+            });
+            btn.addEventListener('mouseleave', function() {
+                this.classList.remove('pressed');
+            });
+        });
         
         // Keyboard support
         document.addEventListener("keydown", function(e) {
@@ -590,8 +654,6 @@
                     addDigit(e.key);
                 } else if (e.key === "Backspace") {
                     deleteDigit();
-                } else if (e.key === "Enter") {
-                    if (currentInput.length === PIN_LENGTH) checkPin();
                 }
             }
         });
