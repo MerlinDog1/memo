@@ -597,130 +597,130 @@
         });
     </script>
     
-    <!-- Three.js Carousel Section -->
+    <!-- Simple Alternatives Section -->
     <section id="alternatives" style="background: linear-gradient(180deg, #1a237e 0%, #0d1b60 100%); color: white; padding: 60px 30px; text-align: center;">
-        <h2 style="color: white; margin-bottom: 20px;">We've considered everything else...</h2>
-        <p style="margin-bottom: 40px; opacity: 0.9;">Over the last year, we've ruled out:</p>
-        <div id="carousel-container" style="height: 400px; margin: 0 auto; max-width: 400px;"></div>
-        <p style="margin-top: 40px; opacity: 0.8; font-size: 0.9rem;">Scroll or drag to explore</p>
+        <h2 style="color: white; margin-bottom: 30px;">We've considered everything else...</h2>
+        <p style="margin-bottom: 30px; opacity: 0.9; font-size: 0.95rem;">Over the last year, doctors have ruled out:</p>
+        
+        <div style="max-width: 500px; margin: 0 auto;">
+            <div id="alternatives-carousel" style="
+                background: rgba(255,255,255,0.1);
+                border-radius: 12px;
+                padding: 30px 40px;
+                min-height: 200px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid rgba(255,255,255,0.2);
+            ">
+                <p id="alternative-text" style="
+                    font-size: 1.3rem;
+                    font-weight: 500;
+                    line-height: 1.8;
+                    opacity: 0;
+                    transform: translateY(20px);
+                    transition: opacity 0.5s ease, transform 0.5s ease;
+                "></p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 12px; margin-top: 25px;">
+                <button onclick="prevAlternative()" style="
+                    background: rgba(255,255,255,0.15);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 1.2rem;
+                    transition: background 0.2s;
+                ">←</button>
+                <div id="dots" style="display: flex; gap: 8px; align-items: center;"></div>
+                <button onclick="nextAlternative()" style="
+                    background: rgba(255,255,255,0.15);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    color: white;
+                    width: 44px;
+                    height: 44px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    font-size: 1.2rem;
+                    transition: background 0.2s;
+                ">→</button>
+            </div>
+            
+            <p style="margin-top: 25px; opacity: 0.7; font-size: 0.85rem;">Why not B1 deficiency—the one we know she's had before?</p>
+        </div>
     </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         const conditions = [
             "Parkinson's disease", "Graves' disease", "Skin cancer", "Brain cancer",
             "Cystic fibrosis", "Hemochromatosis", "Ovarian cancer", "Breast cancer",
             "Heart Failure", "Hypoparathyroidism", "Malnutrition", "Malabsorption",
-            "Vitamin D deficiency", "Antibiotics", "Ataxia", "Amyloidosis",
-            "Kidney cancer", "Myasthenia gravis", "Genetic problems", "Floppy baby syndrome"
+            "Vitamin D deficiency", "Ataxia", "Amyloidosis", "Kidney cancer",
+            "Myasthenia gravis", "Genetic problems", "Floppy baby syndrome"
         ];
         
-        let scene, camera, renderer, textMeshes = [];
-        let isSpinning = true;
-        let targetRotation = 0;
-        let currentRotation = 0;
+        let currentIndex = 0;
+        const textEl = document.getElementById('alternative-text');
+        const dotsEl = document.getElementById('dots');
         
-        function initCarousel() {
-            const container = document.getElementById('carousel-container');
-            const width = container.clientWidth;
-            const height = container.clientHeight;
+        // Create dots
+        conditions.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.style.cssText = `width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,${i === 0 ? '1' : '0.3'}); transition: background 0.3s; cursor: pointer;`;
+            dot.onclick = () => goToIndex(i);
+            dotsEl.appendChild(dot);
+        });
+        
+        function updateDisplay() {
+            const prevText = textEl.textContent;
+            textEl.style.opacity = '0';
+            textEl.style.transform = 'translateY(-20px)';
             
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-            camera.position.z = 5;
+            setTimeout(() => {
+                textEl.textContent = conditions[currentIndex];
+                textEl.style.opacity = '1';
+                textEl.style.transform = 'translateY(0)';
+            }, 300);
             
-            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(width, height);
-            container.appendChild(renderer.domElement);
-            
-            const loader = new THREE.FontLoader();
-            loader.load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json', function(font) {
-                // B1 Deficiency in center
-                const textGeo = new THREE.TextGeometry('B1 Deficiency', {
-                    font: font,
-                    size: 0.12,
-                    height: 0.02,
-                });
-                const textMat = new THREE.MeshBasicMaterial({ color: 0xff5252 });
-                const textMesh = new THREE.Mesh(textGeo, textMat);
-                textMesh.position.z = -2.8;
-                scene.add(textMesh);
-                
-                // Ring of alternatives
-                const radius = 1.4;
-                const spacing = 0.32;
-                conditions.forEach((text, i) => {
-                    const txtGeo = new THREE.TextGeometry(text, {
-                        font: font,
-                        size: 0.06,
-                        height: 0.008,
-                    });
-                    txtGeo.center();
-                    const txtMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
-                    const txtMesh = new THREE.Mesh(txtGeo, txtMat);
-                    
-                    const angle = (i / conditions.length) * Math.PI * 2;
-                    txtMesh.position.x = Math.sin(angle) * radius;
-                    txtMesh.position.y = (i - conditions.length / 2) * spacing;
-                    txtMesh.position.z = Math.cos(angle) * radius - 2.5;
-                    txtMesh.lookAt(camera.position);
-                    txtMesh.userData = { originalAngle: angle };
-                    scene.add(txtMesh);
-                    textMeshes.push(txtMesh);
-                });
+            // Update dots
+            dotsEl.querySelectorAll('div').forEach((dot, i) => {
+                dot.style.background = i === currentIndex ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.3)';
             });
-            
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                if (isSpinning) {
-                    targetRotation += 0.002;
-                }
-                
-                currentRotation += (targetRotation - currentRotation) * 0.08;
-                
-                textMeshes.forEach((mesh) => {
-                    const adjustedAngle = mesh.userData.originalAngle + currentRotation;
-                    mesh.position.x = Math.sin(adjustedAngle) * 1.4;
-                    mesh.position.z = Math.cos(adjustedAngle) * 1.4 - 2.5;
-                    mesh.lookAt(camera.position);
-                    const dist = Math.abs(Math.sin(adjustedAngle));
-                    mesh.material.opacity = 0.2 + dist * 0.6;
-                    mesh.scale.setScalar(0.6 + dist * 0.4);
-                });
-                
-                renderer.render(scene, camera);
-            }
-            
-            animate();
-            
-            container.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                targetRotation += e.deltaY * 0.001;
-                isSpinning = false;
-            });
-            
-            let isDragging = false;
-            let previousY = 0;
-            
-            container.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                previousY = e.clientY;
-            });
-            
-            container.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaY = e.clientY - previousY;
-                targetRotation += deltaY * 0.003;
-                previousY = e.clientY;
-            });
-            
-            container.addEventListener('mouseup', () => isDragging = false);
-            container.addEventListener('mouseleave', () => isDragging = false);
         }
         
-        if (document.getElementById('carousel-container')) {
-            initCarousel();
+        function nextAlternative() {
+            currentIndex = (currentIndex + 1) % conditions.length;
+            updateDisplay();
+        }
+        
+        function prevAlternative() {
+            currentIndex = (currentIndex - 1 + conditions.length) % conditions.length;
+            updateDisplay();
+        }
+        
+        function goToIndex(i) {
+            currentIndex = i;
+            updateDisplay();
+        }
+        
+        // Auto-advance
+        let autoInterval = setInterval(nextAlternative, 4000);
+        
+        // Stop auto-advance on user interaction
+        document.getElementById('alternatives').addEventListener('click', () => {
+            clearInterval(autoInterval);
+            autoInterval = setInterval(nextAlternative, 6000);
+        });
+        
+        // Initial display
+        if (textEl) {
+            textEl.textContent = conditions[0];
+            textEl.style.opacity = '1';
+            textEl.style.transform = 'translateY(0)';
         }
     </script>
 </body>
