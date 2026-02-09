@@ -633,41 +633,38 @@
             renderer.setSize(width, height);
             container.appendChild(renderer.domElement);
             
-            const geometry = new THREE.SphereGeometry(2, 32, 32);
-            const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
-            const sphere = new THREE.Mesh(geometry, material);
-            scene.add(sphere);
-            
             const loader = new THREE.FontLoader();
             loader.load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+                // B1 Deficiency in center
                 const textGeo = new THREE.TextGeometry('B1 Deficiency', {
                     font: font,
-                    size: 0.15,
+                    size: 0.12,
                     height: 0.02,
                 });
                 const textMat = new THREE.MeshBasicMaterial({ color: 0xff5252 });
                 const textMesh = new THREE.Mesh(textGeo, textMat);
-                textMesh.position.z = -2.5;
+                textMesh.position.z = -2.8;
                 scene.add(textMesh);
                 
-                const startZ = -1.8;
-                const spacing = 0.35;
+                // Ring of alternatives
+                const radius = 1.4;
+                const spacing = 0.32;
                 conditions.forEach((text, i) => {
                     const txtGeo = new THREE.TextGeometry(text, {
                         font: font,
-                        size: 0.08,
-                        height: 0.01,
+                        size: 0.06,
+                        height: 0.008,
                     });
                     txtGeo.center();
-                    const txtMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
+                    const txtMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
                     const txtMesh = new THREE.Mesh(txtGeo, txtMat);
                     
                     const angle = (i / conditions.length) * Math.PI * 2;
-                    txtMesh.position.x = Math.sin(angle) * 1.2;
+                    txtMesh.position.x = Math.sin(angle) * radius;
                     txtMesh.position.y = (i - conditions.length / 2) * spacing;
-                    txtMesh.position.z = Math.cos(angle) * 1.2 - 2;
+                    txtMesh.position.z = Math.cos(angle) * radius - 2.5;
                     txtMesh.lookAt(camera.position);
-                    txtMesh.userData = { originalAngle: angle, index: i };
+                    txtMesh.userData = { originalAngle: angle };
                     scene.add(txtMesh);
                     textMeshes.push(txtMesh);
                 });
@@ -677,19 +674,19 @@
                 requestAnimationFrame(animate);
                 
                 if (isSpinning) {
-                    targetRotation += 0.003;
+                    targetRotation += 0.002;
                 }
                 
-                currentRotation += (targetRotation - currentRotation) * 0.05;
+                currentRotation += (targetRotation - currentRotation) * 0.08;
                 
-                textMeshes.forEach((mesh, i) => {
+                textMeshes.forEach((mesh) => {
                     const adjustedAngle = mesh.userData.originalAngle + currentRotation;
-                    mesh.position.x = Math.sin(adjustedAngle) * 1.2;
-                    mesh.position.z = Math.cos(adjustedAngle) * 1.2 - 2;
+                    mesh.position.x = Math.sin(adjustedAngle) * 1.4;
+                    mesh.position.z = Math.cos(adjustedAngle) * 1.4 - 2.5;
                     mesh.lookAt(camera.position);
                     const dist = Math.abs(Math.sin(adjustedAngle));
-                    mesh.material.opacity = 0.3 + dist * 0.7;
-                    mesh.scale.setScalar(0.5 + dist * 0.5);
+                    mesh.material.opacity = 0.2 + dist * 0.6;
+                    mesh.scale.setScalar(0.6 + dist * 0.4);
                 });
                 
                 renderer.render(scene, camera);
@@ -699,7 +696,7 @@
             
             container.addEventListener('wheel', (e) => {
                 e.preventDefault();
-                targetRotation += e.deltaY * 0.002;
+                targetRotation += e.deltaY * 0.001;
                 isSpinning = false;
             });
             
@@ -714,7 +711,7 @@
             container.addEventListener('mousemove', (e) => {
                 if (!isDragging) return;
                 const deltaY = e.clientY - previousY;
-                targetRotation += deltaY * 0.005;
+                targetRotation += deltaY * 0.003;
                 previousY = e.clientY;
             });
             
